@@ -1,11 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context=".MyActivity">
-      <item android:id="@+id/search_button"
-          android:title="@string/action_search"
-          android:icon="@android:drawable/ic_menu_search"
-          app:showAsAction="ifRoom" />
+      tools:context="com.ben.sample.myfirstapp.ShowMessageAcitivity">
     <item android:id="@+id/action_settings"
           android:title="@string/action_settings"
           android:orderInCategory="100"
