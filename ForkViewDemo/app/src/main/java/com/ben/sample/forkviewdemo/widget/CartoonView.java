@@ -1,6 +1,7 @@
 package com.ben.sample.forkviewdemo.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -15,11 +16,9 @@ import com.ben.sample.forkviewdemo.R;
 /**
  * Created by benben on 15-7-6.
  */
-public class CartoonEditText extends RelativeLayout {
+public class CartoonView extends RelativeLayout {
 
     private static final String TAG = "CartoonView";
-
-    private Context mContext;
 
     private ImageView sButton;
     private ImageView mPicture;
@@ -126,23 +125,32 @@ public class CartoonEditText extends RelativeLayout {
         }
     };
 
-    public CartoonEditText(Context context) {
+    public CartoonView(Context context) {
         this(context, null);
     }
 
-    public CartoonEditText(Context context, AttributeSet attrs) {
+    public CartoonView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public CartoonEditText(Context context, AttributeSet attrs, int defStyle) {
+    private int mImageSourceId;
+    private int mBackgroundId;
+    private boolean mEditable;
+    public CartoonView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        mContext = context;
-        onCreateView(this);
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CartoonView);
+        mImageSourceId = a.getResourceId(R.styleable.CartoonView_src, -1);
+        mBackgroundId = a.getResourceId(R.styleable.CartoonView_border, -1);
+        mEditable = a.getBoolean(R.styleable.CartoonView_editable, false);
+        a.recycle();
+
+        onCreateView(context, this);
     }
 
-    protected View onCreateView(ViewGroup parent) {
+    protected View onCreateView(Context context, ViewGroup parent) {
         final LayoutInflater layoutInflater =
-                (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         final View layout = layoutInflater.inflate(R.layout.cartoon_edit_text,
                 parent,
@@ -152,8 +160,19 @@ public class CartoonEditText extends RelativeLayout {
         mBorder = (ImageView) layout.findViewById(R.id.border);
         sButton = (ImageView) layout.findViewById(R.id.scale_btn);
         mEditText = (EditText) layout.findViewById(R.id.edit_text);
-        mEditText.setMaxWidth(mPicture.getWidth() - 20);
-        mEditText.setMaxHeight(mPicture.getHeight() - 20);
+
+        if (mImageSourceId != -1) {
+            mPicture.setImageResource(mImageSourceId);
+        }
+        if (mBackgroundId != -1) {
+            mBorder.setBackgroundResource(mBackgroundId);
+        }
+        if (mEditable) {
+            mEditText.setMaxWidth(mPicture.getWidth() - 20);
+            mEditText.setMaxHeight(mPicture.getHeight() - 20);
+        } else {
+            mEditText.setVisibility(View.GONE);
+        }
         sButton.setOnTouchListener(mTouchListener);
 
         addView(layout, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,

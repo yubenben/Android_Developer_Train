@@ -3,4 +3,9 @@
     <declare-styleable name="BorderLayout">
         <attr name="center_view" format="reference" />
     </declare-styleable>
+    <declare-styleable name="CartoonView">
+        <attr name="src" format="reference" />
+        <attr name="border" format="reference" />
+        <attr name="editable" format="boolean" />
+    </declare-styleable>
 </resources>
