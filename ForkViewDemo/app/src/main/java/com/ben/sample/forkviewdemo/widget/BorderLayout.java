@@ -1,7 +1,9 @@
 package com.ben.sample.forkviewdemo.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,41 +16,51 @@ import com.ben.sample.forkviewdemo.R;
 /**
  * Created by benben on 15-7-3.
  */
-public class CartoonView extends RelativeLayout {
-
+public class BorderLayout extends RelativeLayout{
     private static final String TAG = "CartoonView";
 
     private Context mContext;
+    private ImageView mCenterView;
+    private ImageView scaleButton, delButton, rightButton, bottomButton;
 
-    private ImageView sButton;
-    private ImageView mPicture;
-
-    public CartoonView(Context context) {
+    public BorderLayout(Context context) {
         this(context, null);
     }
 
-    public CartoonView(Context context, AttributeSet attrs) {
+    public BorderLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public CartoonView(Context context, AttributeSet attrs, int defStyle) {
+    public BorderLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BorderLayout);
+        int alignView = a.getResourceId(R.styleable.BorderLayout_center_view, -1);
+        ViewGroup mViewGroup = (ViewGroup)getParent();
+        mCenterView = (ImageView)findViewById(alignView);
+        a.recycle();
+
         onCreateView(this);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        Log.d(TAG, "mCenterView.getMeasuredWidth() " + mCenterView.getMeasuredWidth());
+        Log.d(TAG, "mCenterView.getMeasuredHeight() " + mCenterView.getMeasuredHeight());
     }
 
     protected View onCreateView(ViewGroup parent) {
         final LayoutInflater layoutInflater =
                 (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        final View layout = layoutInflater.inflate(R.layout.cartoon_view_layout,
+        final View layout = layoutInflater.inflate(R.layout.border_layout,
                 parent,
                 false);
 
-        sButton = (ImageView) layout.findViewById(R.id.scale_btn);
-        sButton.setOnTouchListener(mTouchListener);
-
-        mPicture = (ImageView) layout.findViewById(R.id.image);
+        scaleButton = (ImageView) layout.findViewById(R.id.scale_btn);
+        scaleButton.setOnTouchListener(mTouchListener);
 
         addView(layout, new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT));
@@ -74,9 +86,9 @@ public class CartoonView extends RelativeLayout {
                             + Math.pow((event.getRawY() - centerY), 2));
                     fromAngle = Math.toDegrees(Math.atan((event.getRawY() - centerY)
                             / (event.getRawX() - centerX)));
-                    downScaleX = getScaleX();
-                    downScaleY = getScaleY();
-                    downRotation = mPicture.getRotation();
+                    downScaleX = mCenterView.getScaleX();
+                    downScaleY = mCenterView.getScaleY();
+                    downRotation = mCenterView.getRotation();
 
                     //                Log.d(TAG, "down event.getRawX():" + event.getRawX());
                     //                Log.d(TAG, "down event.getRawY():" + event.getRawY());
@@ -98,10 +110,10 @@ public class CartoonView extends RelativeLayout {
                     if (event.getRawX() < centerX) {
                         toAngle += 180;
                     }
-                    mPicture.setRotation((float) (toAngle - fromAngle)
+                    mCenterView.setRotation((float) (toAngle - fromAngle)
                             + downRotation);
-                    setScaleX((float) (toRadius / fromRadius) * downScaleX);
-                    setScaleY((float) (toRadius / fromRadius) * downScaleY);
+                    mCenterView.setScaleX((float) (toRadius / fromRadius) * downScaleX);
+                    mCenterView.setScaleY((float) (toRadius / fromRadius) * downScaleY);
 
                     //                Log.d(TAG, "move event.getRawX():" + event.getRawX());
                     //                Log.d(TAG, "move event.getRawY():" + event.getRawY());

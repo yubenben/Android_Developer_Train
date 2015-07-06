@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:padding="2dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/circus_lion_portain" />
+        android:src="@drawable/speech_vector"/>
+
+    <EditText
+        android:id="@+id/edit_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@null"
+        android:cursorVisible="true"
+        android:padding="10dp"/>
 
     <ImageView
+        android:id="@+id/border"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/image"
         android:layout_alignLeft="@id/image"
         android:layout_alignRight="@id/image"
         android:layout_alignTop="@id/image"
-        android:background="@drawable/ic_focus_failed" />
+        android:background="@drawable/ic_focus_failed"/>
 
     <ImageView
         android:id="@+id/scale_btn"
@@ -26,6 +37,6 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/image"
         android:layout_alignRight="@id/image"
-        android:src="@drawable/ic_action_new_secret" />
+        android:src="@drawable/ic_action_new_secret"/>
 
 </RelativeLayout>
