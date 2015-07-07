@@ -3,4 +3,8 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="save">保存</string>
+    <string name="add_circle">添加一个圆</string>
+    <string name="add_squre">添加一个方</string>
+    <string name="add_edit">添加一个对话气泡</string>
 </resources>

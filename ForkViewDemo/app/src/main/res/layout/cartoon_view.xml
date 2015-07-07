@@ -29,7 +29,7 @@
         android:layout_alignLeft="@id/image"
         android:layout_alignRight="@id/image"
         android:layout_alignTop="@id/image"
-        android:background="@drawable/borders_on"/>
+        android:background="@drawable/avatar_dotline_bg"/>
 
     <ImageView
         android:id="@+id/scale_btn"
