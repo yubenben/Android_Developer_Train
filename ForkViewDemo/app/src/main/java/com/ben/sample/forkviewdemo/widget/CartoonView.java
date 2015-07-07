@@ -3,7 +3,6 @@ package com.ben.sample.forkviewdemo.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -52,21 +51,10 @@ public class CartoonView extends RelativeLayout {
                     downScaleY = mPicture.getScaleY();
                     downRotation = mPicture.getRotation();
 
-                    Log.d(TAG, "down getx = " + getX());
-                    Log.d(TAG, "down gety = " + getY());
-                    Log.d(TAG, "down centerX = " +centerX);
-                    Log.d(TAG, "down centerY = " + centerY);
-                    Log.d(TAG, "down event.getRawX() = " + event.getRawX());
-                    Log.d(TAG, "down event.getRawY() = " + event.getRawY());
-                    Log.d(TAG, "down fromRadius = " + fromRadius);
-
                     break;
                 case MotionEvent.ACTION_MOVE:
                     toRadius = Math.sqrt(Math.pow((event.getRawX() - centerX), 2)
                             + Math.pow((event.getRawY() - centerY), 2));
-                    Log.d(TAG, "move event.getRawX() = " + event.getRawX());
-                    Log.d(TAG, "move event.getRawY() = " + event.getRawY());
-                    Log.d(TAG, "move toRadius = " + toRadius);
                     toAngle = Math.toDegrees(Math.atan((event.getRawY() - centerY)
                             / (event.getRawX() - centerX)));
                     if (event.getRawX() < centerX) {
@@ -170,7 +158,7 @@ public class CartoonView extends RelativeLayout {
         final LayoutInflater layoutInflater =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        final View layout = layoutInflater.inflate(R.layout.cartoon_edit_text,
+        final View layout = layoutInflater.inflate(R.layout.cartoon_view,
                 parent,
                 false);
 
