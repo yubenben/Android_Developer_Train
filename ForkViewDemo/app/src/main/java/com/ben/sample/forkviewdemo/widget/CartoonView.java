@@ -20,6 +20,7 @@ public class CartoonView extends RelativeLayout {
 
     private static final String TAG = "CartoonView";
 
+    private static final int TEXT_PADDING_SIZE = 100;
     private ImageView sButton;
     private ImageView mPicture;
     private ImageView mBorder;
@@ -63,20 +64,22 @@ public class CartoonView extends RelativeLayout {
 
                     mBorder.setScaleX((float)
                                     (
-                                            (
-                                                    mPicture.getWidth() * Math.abs(Math.cos(Math.toRadians(mPicture.getRotation())))
-                                                            + mPicture.getHeight() * Math.abs(Math.sin(Math.toRadians(mPicture.getRotation())))
-                                            )
-                                                    / mPicture.getWidth() * ((toRadius / fromRadius) * downScaleX)
+                                            ((toRadius / fromRadius) * downScaleX) *
+                                                    (
+                                                            mPicture.getWidth() * Math.abs(Math.cos(Math.toRadians(mPicture.getRotation())))
+                                                                    + mPicture.getHeight() * Math.abs(Math.sin(Math.toRadians(mPicture.getRotation())))
+                                                    )
+                                                    / mPicture.getWidth()
                                     )
                     );
                     mBorder.setScaleY((float)
                                     (
-                                            (
-                                                    mPicture.getWidth() * Math.abs(Math.sin(Math.toRadians(mPicture.getRotation())))
-                                                            + mPicture.getHeight() * Math.abs(Math.cos(Math.toRadians(mPicture.getRotation())))
-                                            )
-                                                    / mPicture.getHeight() * ((toRadius / fromRadius) * downScaleY)
+                                            ((toRadius / fromRadius) * downScaleY) *
+                                                    (
+                                                            mPicture.getWidth() * Math.abs(Math.sin(Math.toRadians(mPicture.getRotation())))
+                                                                    + mPicture.getHeight() * Math.abs(Math.cos(Math.toRadians(mPicture.getRotation())))
+                                                    )
+                                                    / mPicture.getHeight()
                                     )
                     );
 
@@ -107,8 +110,8 @@ public class CartoonView extends RelativeLayout {
                                     * (mPicture.getHeight() / 2)
                     );
 
-                    mEditText.setMaxWidth((int) (mPicture.getWidth() * mPicture.getScaleX() - 20));
-                    mEditText.setMaxHeight((int) (mPicture.getHeight() * mPicture.getScaleY() - 20));
+                    mEditText.setMaxWidth((int) (mPicture.getWidth() * mPicture.getScaleX() - TEXT_PADDING_SIZE));
+                    mEditText.setMaxHeight((int) (mPicture.getHeight() * mPicture.getScaleY() - TEXT_PADDING_SIZE));
 
                     break;
                 case MotionEvent.ACTION_UP:
@@ -124,6 +127,9 @@ public class CartoonView extends RelativeLayout {
             return true;
         }
     };
+    private int mImageSourceId;
+    private int mBackgroundId;
+    private boolean mEditable;
 
     public CartoonView(Context context) {
         this(context, null);
@@ -133,9 +139,6 @@ public class CartoonView extends RelativeLayout {
         this(context, attrs, 0);
     }
 
-    private int mImageSourceId;
-    private int mBackgroundId;
-    private boolean mEditable;
     public CartoonView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
@@ -168,8 +171,8 @@ public class CartoonView extends RelativeLayout {
             mBorder.setBackgroundResource(mBackgroundId);
         }
         if (mEditable) {
-            mEditText.setMaxWidth(mPicture.getWidth() - 20);
-            mEditText.setMaxHeight(mPicture.getHeight() - 20);
+            mEditText.setMaxWidth(mPicture.getWidth() - TEXT_PADDING_SIZE);
+            mEditText.setMaxHeight(mPicture.getHeight() - TEXT_PADDING_SIZE);
         } else {
             mEditText.setVisibility(View.GONE);
         }

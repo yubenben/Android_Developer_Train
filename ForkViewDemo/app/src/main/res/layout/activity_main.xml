@@ -33,8 +33,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        cartoon:src="@drawable/ic_preference_sayhi_normal"
-        cartoon:border="@drawable/camera_filter_reviewbox_checked"
+        cartoon:src="@drawable/addfriend_icon_official"
+        cartoon:border="@drawable/avatar_dotline_bg"
         cartoon:editable="true" />
 
 </RelativeLayout>
