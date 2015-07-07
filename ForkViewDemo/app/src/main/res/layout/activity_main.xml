@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        cartoon:src="@drawable/addfriend_icon_official"
+        cartoon:src="@drawable/app_attach_file_icon_music_large"
         cartoon:border="@drawable/avatar_dotline_bg"
         cartoon:editable="true" />
 
