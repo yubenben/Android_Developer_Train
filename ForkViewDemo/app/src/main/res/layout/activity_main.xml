@@ -11,15 +11,22 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity">
 
-    <!--<com.ben.sample.forkviewdemo.widget.CartoonView
+    <RelativeLayout
+        android:id="@+id/canve_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <com.ben.sample.forkviewdemo.widget.NewCartoonView
+        android:id="@+id/cartoon"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         cartoon:border="@drawable/avatar_dotline_bg"
         cartoon:editable="false"
-        cartoon:src="@drawable/fav_search_location"/>-->
+        cartoon:src="@drawable/bottle_day_bg"/>
+    </RelativeLayout>
 
-    <RelativeLayout
+    <!--<RelativeLayout
         android:id="@+id/canve_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -30,6 +37,6 @@
             android:layout_height="match_parent"
             android:scaleType="centerInside"
             android:src="@drawable/bottle_day_bg"/>
-    </RelativeLayout>
+    </RelativeLayout>-->
 
 </RelativeLayout>

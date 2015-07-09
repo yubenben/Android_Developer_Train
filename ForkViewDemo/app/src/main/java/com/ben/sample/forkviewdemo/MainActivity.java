@@ -1,6 +1,5 @@
 package com.ben.sample.forkviewdemo;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
@@ -8,10 +7,10 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.ben.sample.forkviewdemo.widget.CartoonView;
+import com.ben.sample.forkviewdemo.widget.NewCartoonView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,14 +21,15 @@ import java.io.OutputStream;
 public class MainActivity extends ActionBarActivity {
 
     private RelativeLayout mCanvasLayout;
-    private ImageView mImageView;
+    private NewCartoonView mNewCartoonView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mCanvasLayout = (RelativeLayout) findViewById(R.id.canve_layout);
-        mImageView = (ImageView) findViewById(R.id.photo_image);
+        mNewCartoonView = (NewCartoonView) findViewById(R.id.cartoon);
     }
 
     @Override
@@ -42,17 +42,15 @@ public class MainActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_circle:
-                mCanvasLayout.addView(newCartoonView(this, R.drawable.fav_search_location, false));
+                mNewCartoonView.addCartton(this, R.drawable.fav_search_location, 700, 700);
                 break;
             case R.id.add_edit:
-                mCanvasLayout.addView(newCartoonView(this, R.drawable.speech_vector, true));
+                mNewCartoonView.addCartton(this, R.drawable.speech_vector, 700, 700);
                 break;
             case R.id.add_squre:
-                mCanvasLayout.addView(newCartoonView(this, R.drawable.app_attach_file_icon_music_large, false));
+                mNewCartoonView.addCartton(this, R.drawable.app_attach_file_icon_music_large, 700, 700);
                 break;
             case R.id.save:
-//                mCanvasLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-//                mCanvasLayout.layout(0, 0, mCanvasLayout.getMeasuredWidth(), mCanvasLayout.getMeasuredHeight());
                 int count = mCanvasLayout.getChildCount();
                 for (int i = 0; i < count; i++) {
                     View view = mCanvasLayout.getChildAt(i);
@@ -84,12 +82,5 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private CartoonView newCartoonView(Context context, int img_id, boolean editable) {
-        CartoonView cartoon = new CartoonView(context);
-        cartoon.setPictureResource(img_id);
-        cartoon.setEditable(editable);
-        return cartoon;
     }
 }
