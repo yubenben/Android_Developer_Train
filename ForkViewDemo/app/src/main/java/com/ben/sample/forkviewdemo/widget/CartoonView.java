@@ -3,6 +3,7 @@ package com.ben.sample.forkviewdemo.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,7 +22,8 @@ public class CartoonView extends RelativeLayout {
     private static final String TAG = "CartoonView";
 
     private static final int TEXT_PADDING_SIZE = 100;
-    private ImageView sButton;
+    private RelativeLayout mParentView;
+    private ImageView mTransButton;
     private ImageView mPicture;
     private ImageView mBorder;
     private EditText mEditText;
@@ -46,6 +48,7 @@ public class CartoonView extends RelativeLayout {
         mEditable = a.getBoolean(R.styleable.CartoonView_editable, false);
         a.recycle();
 
+        mParentView = this;
         onCreateView(context, this);
     }
 
@@ -59,13 +62,13 @@ public class CartoonView extends RelativeLayout {
 
         mPicture = (ImageView) layout.findViewById(R.id.image);
         mBorder = (ImageView) layout.findViewById(R.id.border);
-        sButton = (ImageView) layout.findViewById(R.id.scale_btn);
+        mTransButton = (ImageView) layout.findViewById(R.id.scale_btn);
         mEditText = (EditText) layout.findViewById(R.id.edit_text);
 
         setPictureResource(mImageSourceId);
         setBorderResource(mBackgroundId);
         setEditable(mEditable);
-        sButton.setOnTouchListener(new View.OnTouchListener() {
+        mTransButton.setOnTouchListener(new View.OnTouchListener() {
 
             float centerX, centerY;
             float downScaleX, downScaleY, downRotation;
@@ -126,7 +129,7 @@ public class CartoonView extends RelativeLayout {
                                         )
                         );
 
-                        sButton.setTranslationX((float)
+                        mTransButton.setTranslationX((float)
                                         (
                                                 (
                                                         (
@@ -139,7 +142,7 @@ public class CartoonView extends RelativeLayout {
                                         )
                                         * (mPicture.getWidth() / 2)
                         );
-                        sButton.setTranslationY((float)
+                        mTransButton.setTranslationY((float)
                                         (
                                                 (
                                                         (
@@ -155,6 +158,7 @@ public class CartoonView extends RelativeLayout {
 
                         mEditText.setMaxWidth((int) (mPicture.getWidth() * mPicture.getScaleX() - TEXT_PADDING_SIZE));
                         mEditText.setMaxHeight((int) (mPicture.getHeight() * mPicture.getScaleY() - TEXT_PADDING_SIZE));
+                        Log.d(TAG, "mPicture.getWidth()=" + mPicture.getWidth() + "  mPicture.getHeight()=" + mPicture.getHeight());
 
                         break;
                     case MotionEvent.ACTION_UP:
@@ -170,9 +174,43 @@ public class CartoonView extends RelativeLayout {
                 return true;
             }
         });
+        layout.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    setBorderVisible(View.VISIBLE);
+                } else {
+                    setBorderVisible(View.GONE);
+                }
+            }
+        });
+        setOnTouchListener(new OnTouchListener() {
+            float downX, downY, translationX, translationY;
 
-        addView(layout, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.MATCH_PARENT));
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        downX = event.getRawX();
+                        downY = event.getRawY();
+                        translationX = v.getTranslationX();
+                        translationY = v.getTranslationY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        v.setTranslationX(translationX + event.getRawX() - downX);
+                        v.setTranslationY(translationY + event.getRawY() - downY);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                        break;
+                }
+                return true;
+            }
+        });
+
+        addView(layout, new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT));
         return layout;
     }
 
@@ -186,6 +224,11 @@ public class CartoonView extends RelativeLayout {
         if (reference != -1) {
             mPicture.setImageResource(reference);
         }
+    }
+
+    public void setBorderVisible(int visible) {
+        mBorder.setVisibility(visible);
+        mTransButton.setVisibility(visible);
     }
 
     public void setEditable(boolean editable) {

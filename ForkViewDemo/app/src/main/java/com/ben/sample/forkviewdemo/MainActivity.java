@@ -7,6 +7,8 @@ import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.ben.sample.forkviewdemo.widget.CartoonView;
@@ -19,13 +21,15 @@ import java.io.OutputStream;
 
 public class MainActivity extends ActionBarActivity {
 
-    private RelativeLayout mCanveLayout;
+    private RelativeLayout mCanvasLayout;
+    private ImageView mImageView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mCanveLayout = (RelativeLayout) findViewById(R.id.canve_layout);
+        mCanvasLayout = (RelativeLayout) findViewById(R.id.canve_layout);
+        mImageView = (ImageView) findViewById(R.id.photo_image);
     }
 
     @Override
@@ -38,18 +42,25 @@ public class MainActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_circle:
-                mCanveLayout.addView(newCartoonView(this, R.drawable.fav_search_location, false));
+                mCanvasLayout.addView(newCartoonView(this, R.drawable.fav_search_location, false));
                 break;
             case R.id.add_edit:
-                mCanveLayout.addView(newCartoonView(this, R.drawable.speech_vector, true));
+                mCanvasLayout.addView(newCartoonView(this, R.drawable.speech_vector, true));
                 break;
             case R.id.add_squre:
-                mCanveLayout.addView(newCartoonView(this, R.drawable.app_attach_file_icon_music_large, false));
+                mCanvasLayout.addView(newCartoonView(this, R.drawable.app_attach_file_icon_music_large, false));
                 break;
             case R.id.save:
-                //mCanveLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-                //mCanveLayout.layout(0, 0, mCanveLayout.getMeasuredWidth(), mCanveLayout.getMeasuredHeight());
-                mCanveLayout.buildDrawingCache();
+//                mCanvasLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+//                mCanvasLayout.layout(0, 0, mCanvasLayout.getMeasuredWidth(), mCanvasLayout.getMeasuredHeight());
+                int count = mCanvasLayout.getChildCount();
+                for (int i = 0; i < count; i++) {
+                    View view = mCanvasLayout.getChildAt(i);
+                    if (view instanceof CartoonView) {
+                        ((CartoonView) view).setBorderVisible(View.GONE);
+                    }
+                }
+                mCanvasLayout.buildDrawingCache();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -58,7 +69,7 @@ public class MainActivity extends ActionBarActivity {
                         try {
                             path.mkdirs();
                             OutputStream out = new FileOutputStream(file);
-                            mCanveLayout.getDrawingCache().compress(Bitmap.CompressFormat.PNG, 90, out);
+                            mCanvasLayout.getDrawingCache().compress(Bitmap.CompressFormat.PNG, 90, out);
                             out.close();
                         } catch (IOException e) {
                             e.printStackTrace();
