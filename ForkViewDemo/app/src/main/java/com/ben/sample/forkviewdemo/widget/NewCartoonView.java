@@ -2,6 +2,8 @@ package com.ben.sample.forkviewdemo.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.os.Environment;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -12,6 +14,11 @@ import android.widget.RelativeLayout;
 
 import com.ben.sample.forkviewdemo.R;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 /**
  * Created by benben on 15-7-9.
  */
@@ -20,6 +27,7 @@ public class NewCartoonView extends RelativeLayout {
     private static final String TAG = "CartoonView";
 
     private RelativeLayout mParentView;
+    private ImageView mSourceImage;
     private int mImageSourceId;
 
     public NewCartoonView(Context context) {
@@ -39,16 +47,17 @@ public class NewCartoonView extends RelativeLayout {
 
         mParentView = this;
 
-        ImageView imageView = new ImageView(context);
+        mSourceImage = new ImageView(context);
+        mSourceImage.setFocusableInTouchMode(true);
         if (mImageSourceId != -1) {
-            imageView.setImageResource(mImageSourceId);
+            mSourceImage.setImageResource(mImageSourceId);
         }
 
-        addView(imageView, new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+        addView(mSourceImage, new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT));
     }
 
-    public void addCartton(Context context, int img_id, int width, int height) {
+    public void addCartton(Context context, int img_id, int width, int height, boolean editable) {
         LayoutParams imageParams = new LayoutParams(width, height);
         imageParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 
@@ -67,6 +76,7 @@ public class NewCartoonView extends RelativeLayout {
         addView(border, borderParams);
 
         addDragAnimation(imageView, border, scaleBtn);
+        imageView.requestFocus();
     }
 
     private void addDragAnimation(final View centerView, final View bordView, final View dragBtn) {
@@ -153,6 +163,7 @@ public class NewCartoonView extends RelativeLayout {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        v.requestFocus();
                         downX = event.getRawX();
                         downY = event.getRawY();
                         translationX = centerView.getTranslationX();
@@ -165,7 +176,7 @@ public class NewCartoonView extends RelativeLayout {
                         bordView.setTranslationY(translationY + event.getRawY() - downY);
                         break;
                     case MotionEvent.ACTION_UP:
-                        v.requestFocus();
+
                         break;
                     case MotionEvent.ACTION_CANCEL:
                         break;
@@ -175,22 +186,40 @@ public class NewCartoonView extends RelativeLayout {
         });
 
         centerView.setFocusable(true);
+        centerView.setFocusableInTouchMode(true);
         centerView.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
+                    v.bringToFront();
                     bordView.setVisibility(View.VISIBLE);
+                    bordView.bringToFront();
                 } else {
                     bordView.setVisibility(View.GONE);
                 }
             }
         });
+    }
 
-        centerView.setOnClickListener(new OnClickListener() {
+    public void saveCartoonView() {
+        mSourceImage.requestFocus();
+        mParentView.buildDrawingCache();
+        new Thread(new Runnable() {
             @Override
-            public void onClick(View v) {
-                centerView.requestFocus();
+            public void run() {
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                File file = new File(path, "demo1.png");
+                try {
+                    path.mkdirs();
+                    OutputStream out = new FileOutputStream(file);
+                    mParentView.getDrawingCache().compress(Bitmap.CompressFormat.PNG, 90, out);
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        });
+        }).start();
     }
 }

@@ -1,21 +1,12 @@
 package com.ben.sample.forkviewdemo;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.RelativeLayout;
 
-import com.ben.sample.forkviewdemo.widget.CartoonView;
 import com.ben.sample.forkviewdemo.widget.NewCartoonView;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -42,40 +33,41 @@ public class MainActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_circle:
-                mNewCartoonView.addCartton(this, R.drawable.fav_search_location, 700, 700);
+                mNewCartoonView.addCartton(this, R.drawable.fav_search_location, 700, 700, false);
                 break;
             case R.id.add_edit:
-                mNewCartoonView.addCartton(this, R.drawable.speech_vector, 700, 700);
+                mNewCartoonView.addCartton(this, R.drawable.speech_vector, 700, 700, true);
                 break;
             case R.id.add_squre:
-                mNewCartoonView.addCartton(this, R.drawable.app_attach_file_icon_music_large, 700, 700);
+                mNewCartoonView.addCartton(this, R.drawable.app_attach_file_icon_music_large, 700, 700, false);
                 break;
             case R.id.save:
-                int count = mCanvasLayout.getChildCount();
-                for (int i = 0; i < count; i++) {
-                    View view = mCanvasLayout.getChildAt(i);
-                    if (view instanceof CartoonView) {
-                        ((CartoonView) view).setBorderVisible(View.GONE);
-                    }
-                }
-                mCanvasLayout.buildDrawingCache();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-                        File file = new File(path, "demo1.png");
-                        try {
-                            path.mkdirs();
-                            OutputStream out = new FileOutputStream(file);
-                            mCanvasLayout.getDrawingCache().compress(Bitmap.CompressFormat.PNG, 90, out);
-                            out.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
+                mNewCartoonView.saveCartoonView();
+//                int count = mCanvasLayout.getChildCount();
+//                for (int i = 0; i < count; i++) {
+//                    View view = mCanvasLayout.getChildAt(i);
+//                    if (view instanceof CartoonView) {
+//                        ((CartoonView) view).setBorderVisible(View.GONE);
+//                    }
+//                }
+//                mCanvasLayout.buildDrawingCache();
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+//                        File file = new File(path, "demo1.png");
+//                        try {
+//                            path.mkdirs();
+//                            OutputStream out = new FileOutputStream(file);
+//                            mCanvasLayout.getDrawingCache().compress(Bitmap.CompressFormat.PNG, 90, out);
+//                            out.close();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }).start();
 
             default:
                 break;
