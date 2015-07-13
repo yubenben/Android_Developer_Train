@@ -4,11 +4,15 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -25,7 +29,7 @@ import java.io.OutputStream;
 public class NewCartoonView extends RelativeLayout {
 
     private static final String TAG = "CartoonView";
-
+    private static final int TEXT_PADDING_SIZE = 100;
     private RelativeLayout mParentView;
     private ImageView mSourceImage;
     private int mImageSourceId;
@@ -58,11 +62,11 @@ public class NewCartoonView extends RelativeLayout {
     }
 
     public void addCartton(Context context, int img_id, int width, int height, boolean editable) {
-        LayoutParams imageParams = new LayoutParams(width, height);
-        imageParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 
         ImageView imageView = new ImageView(context);
         imageView.setImageResource(img_id);
+        LayoutParams imageParams = new LayoutParams(width, height);
+        imageParams.addRule(RelativeLayout.CENTER_IN_PARENT);
         addView(imageView, imageParams);
 
         LayoutInflater layoutInflater =
@@ -75,11 +79,42 @@ public class NewCartoonView extends RelativeLayout {
         borderParams.addRule(RelativeLayout.CENTER_IN_PARENT);
         addView(border, borderParams);
 
-        addDragAnimation(imageView, border, scaleBtn);
+        EditText editText = null;
+        if (editable) {
+            editText = new EditText(context);
+            editText.setHint("输入内容");
+            editText.setBackgroundColor(0x00000000);
+            editText.setFocusableInTouchMode(true);
+            editText.setMaxWidth(width - TEXT_PADDING_SIZE);
+            editText.setMaxHeight(height - TEXT_PADDING_SIZE);
+            editText.setOnFocusChangeListener(new OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    final boolean isFocus = hasFocus;
+                    final EditText input = (EditText) v;
+                    (new Handler()).postDelayed(new Runnable() {
+                        public void run() {
+                            InputMethodManager imm = (InputMethodManager)
+                                    input.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            if (isFocus) {
+                                imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+                            } else {
+                                imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
+                            }
+                        }
+                    }, 100);
+                }
+            });
+            LayoutParams textParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            textParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+            addView(editText, textParams);
+        }
+
+        addDragAnimation(context, imageView, border, scaleBtn, editText);
         imageView.requestFocus();
     }
 
-    private void addDragAnimation(final View centerView, final View bordView, final View dragBtn) {
+    private void addDragAnimation(final Context context, final View centerView, final View bordView, final View dragBtn, final EditText editText) {
 
         dragBtn.setOnTouchListener(new View.OnTouchListener() {
 
@@ -140,6 +175,10 @@ public class NewCartoonView extends RelativeLayout {
                                 );
 
                         bordView.setLayoutParams(params);
+                        if (editText != null) {
+                            editText.setMaxWidth(params.width - TEXT_PADDING_SIZE);
+                            editText.setMaxHeight(params.height - TEXT_PADDING_SIZE);
+                        }
 
                         break;
                     case MotionEvent.ACTION_UP:
@@ -174,8 +213,16 @@ public class NewCartoonView extends RelativeLayout {
                         centerView.setTranslationY(translationY + event.getRawY() - downY);
                         bordView.setTranslationX(translationX + event.getRawX() - downX);
                         bordView.setTranslationY(translationY + event.getRawY() - downY);
+                        if (editText!= null) {
+                            editText.setTranslationX(translationX + event.getRawX() - downX);
+                            editText.setTranslationY(translationY + event.getRawY() - downY);
+                        }
                         break;
                     case MotionEvent.ACTION_UP:
+                        if ((editText != null) && (Math.abs(event.getRawY() - downY) < ViewConfiguration.get(context).getScaledTouchSlop()) &&
+                                (Math.abs(event.getRawX() - downX) < ViewConfiguration.get(context).getScaledTouchSlop())) {
+                            editText.requestFocus();
+                        }
 
                         break;
                     case MotionEvent.ACTION_CANCEL:
@@ -194,7 +241,7 @@ public class NewCartoonView extends RelativeLayout {
                     v.bringToFront();
                     bordView.setVisibility(View.VISIBLE);
                     bordView.bringToFront();
-                } else {
+                }else {
                     bordView.setVisibility(View.GONE);
                 }
             }
