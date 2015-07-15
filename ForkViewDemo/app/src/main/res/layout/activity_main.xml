@@ -16,14 +16,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <com.ben.sample.forkviewdemo.widget.NewCartoonView
-        android:id="@+id/cartoon"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        cartoon:border="@drawable/avatar_dotline_bg"
-        cartoon:editable="false"
-        cartoon:src="@drawable/bottle_day_bg"/>
+        <com.ben.sample.forkviewdemo.widget.NewCartoonView
+            android:id="@+id/cartoon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            cartoon:border="@drawable/avatar_dotline_bg"
+            cartoon:editable="false"
+            cartoon:src="@drawable/bottle_day_bg"/>
     </RelativeLayout>
 
     <!--<RelativeLayout

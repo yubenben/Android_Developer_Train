@@ -33,13 +33,13 @@ public class MainActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add_circle:
-                mNewCartoonView.addCartton(this, R.drawable.fav_search_location, 700, 700, false);
+                mNewCartoonView.addCartton(this, R.drawable.fav_search_location, true);
                 break;
             case R.id.add_edit:
-                mNewCartoonView.addCartton(this, R.drawable.speech_vector, 700, 700, true);
+                mNewCartoonView.addCartton(this, R.drawable.speech_vector,true);
                 break;
             case R.id.add_squre:
-                mNewCartoonView.addCartton(this, R.drawable.app_attach_file_icon_music_large, 700, 700, false);
+                mNewCartoonView.addCartton(this, R.drawable.app_attach_file_icon_music_large, true);
                 break;
             case R.id.save:
                 mNewCartoonView.saveCartoonView();

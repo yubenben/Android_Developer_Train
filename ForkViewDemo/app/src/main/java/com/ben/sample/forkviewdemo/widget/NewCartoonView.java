@@ -3,6 +3,7 @@ package com.ben.sample.forkviewdemo.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -30,6 +31,7 @@ public class NewCartoonView extends RelativeLayout {
 
     private static final String TAG = "CartoonView";
     private static final int TEXT_PADDING_SIZE = 100;
+    private static final int BORD_PADDIN_SIZE = 200;
     private RelativeLayout mParentView;
     private ImageView mSourceImage;
     private int mImageSourceId;
@@ -61,11 +63,15 @@ public class NewCartoonView extends RelativeLayout {
                 LayoutParams.MATCH_PARENT));
     }
 
-    public void addCartton(Context context, int img_id, int width, int height, boolean editable) {
+    public void addCartton(Context context, int img_id, boolean editable) {
+
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(getResources(), img_id, opts);
 
         ImageView imageView = new ImageView(context);
         imageView.setImageResource(img_id);
-        LayoutParams imageParams = new LayoutParams(width, height);
+        LayoutParams imageParams = new LayoutParams(opts.outWidth, opts.outHeight);
         imageParams.addRule(RelativeLayout.CENTER_IN_PARENT);
         addView(imageView, imageParams);
 
@@ -75,7 +81,7 @@ public class NewCartoonView extends RelativeLayout {
                 null,
                 false);
         ImageView scaleBtn = (ImageView) border.findViewById(R.id.scale_btn);
-        LayoutParams borderParams = new LayoutParams(width, height);
+        LayoutParams borderParams = new LayoutParams(opts.outWidth + BORD_PADDIN_SIZE, opts.outHeight + BORD_PADDIN_SIZE);
         borderParams.addRule(RelativeLayout.CENTER_IN_PARENT);
         addView(border, borderParams);
 
@@ -83,10 +89,11 @@ public class NewCartoonView extends RelativeLayout {
         if (editable) {
             editText = new EditText(context);
             editText.setHint("输入内容");
+            editText.setTextColor(0xff00ffff);
             editText.setBackgroundColor(0x00000000);
             editText.setFocusableInTouchMode(true);
-            editText.setMaxWidth(width - TEXT_PADDING_SIZE);
-            editText.setMaxHeight(height - TEXT_PADDING_SIZE);
+            editText.setMaxWidth(opts.outWidth - TEXT_PADDING_SIZE);
+            editText.setMaxHeight(opts.outHeight - TEXT_PADDING_SIZE);
             editText.setOnFocusChangeListener(new OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
@@ -157,28 +164,30 @@ public class NewCartoonView extends RelativeLayout {
                         centerView.setScaleY((float) (toRadius / fromRadius) * downScaleY);
 
                         ViewGroup.LayoutParams params = bordView.getLayoutParams();
-                        params.width =
-                                (int) (
-                                        ((toRadius / fromRadius) * downScaleX) *
-                                                (
-                                                        centerView.getWidth() * Math.abs(Math.cos(Math.toRadians(centerView.getRotation())))
-                                                                + centerView.getHeight() * Math.abs(Math.sin(Math.toRadians(centerView.getRotation())))
-                                                )
-                                );
-                        params.height =
-                                (int) (
-                                        ((toRadius / fromRadius) * downScaleY) *
-                                                (
-                                                        centerView.getWidth() * Math.abs(Math.sin(Math.toRadians(centerView.getRotation())))
-                                                                + centerView.getHeight() * Math.abs(Math.cos(Math.toRadians(centerView.getRotation())))
-                                                )
-                                );
+                        params.width = (int) (centerView.getWidth() * ((toRadius / fromRadius) * downScaleX) + BORD_PADDIN_SIZE);
+//                                (int) (
+//                                        ((toRadius / fromRadius) * downScaleX) *
+//                                                (
+//                                                        centerView.getWidth() * Math.abs(Math.cos(Math.toRadians(centerView.getRotation())))
+//                                                                + centerView.getHeight() * Math.abs(Math.sin(Math.toRadians(centerView.getRotation())))
+//                                                )
+//                                );
+                        params.height = (int) (centerView.getHeight() * ((toRadius / fromRadius) * downScaleX) + BORD_PADDIN_SIZE);
+//                                (int) (
+//                                        ((toRadius / fromRadius) * downScaleY) *
+//                                                (
+//                                                        centerView.getWidth() * Math.abs(Math.sin(Math.toRadians(centerView.getRotation())))
+//                                                                + centerView.getHeight() * Math.abs(Math.cos(Math.toRadians(centerView.getRotation())))
+//                                                )
+//                                );
 
                         bordView.setLayoutParams(params);
                         if (editText != null) {
-                            editText.setMaxWidth(params.width - TEXT_PADDING_SIZE);
-                            editText.setMaxHeight(params.height - TEXT_PADDING_SIZE);
+                            editText.setMaxWidth(params.width - BORD_PADDIN_SIZE - TEXT_PADDING_SIZE);
+                            editText.setMaxHeight(params.height - BORD_PADDIN_SIZE - TEXT_PADDING_SIZE);
                         }
+                        editText.setRotation((float) (toAngle - fromAngle)
+                                + downRotation);
 
                         break;
                     case MotionEvent.ACTION_UP:
@@ -213,7 +222,7 @@ public class NewCartoonView extends RelativeLayout {
                         centerView.setTranslationY(translationY + event.getRawY() - downY);
                         bordView.setTranslationX(translationX + event.getRawX() - downX);
                         bordView.setTranslationY(translationY + event.getRawY() - downY);
-                        if (editText!= null) {
+                        if (editText != null) {
                             editText.setTranslationX(translationX + event.getRawX() - downX);
                             editText.setTranslationY(translationY + event.getRawY() - downY);
                         }
@@ -241,7 +250,7 @@ public class NewCartoonView extends RelativeLayout {
                     v.bringToFront();
                     bordView.setVisibility(View.VISIBLE);
                     bordView.bringToFront();
-                }else {
+                } else {
                     bordView.setVisibility(View.GONE);
                 }
             }
