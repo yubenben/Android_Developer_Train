@@ -39,7 +39,7 @@ public class MainActivity extends ActionBarActivity {
                 mNewCartoonView.addCartton(this, R.drawable.speech_vector,true);
                 break;
             case R.id.add_squre:
-                mNewCartoonView.addCartton(this, R.drawable.app_attach_file_icon_music_large, true);
+                mNewCartoonView.addCartton(this, R.drawable.paper_view_item_background, true);
                 break;
             case R.id.save:
                 mNewCartoonView.saveCartoonView();

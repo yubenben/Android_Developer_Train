@@ -81,19 +81,19 @@ public class NewCartoonView extends RelativeLayout {
                 null,
                 false);
         ImageView scaleBtn = (ImageView) border.findViewById(R.id.scale_btn);
+        ImageView delBtn = (ImageView) border.findViewById(R.id.del_btn);
         LayoutParams borderParams = new LayoutParams(opts.outWidth + BORD_PADDIN_SIZE, opts.outHeight + BORD_PADDIN_SIZE);
         borderParams.addRule(RelativeLayout.CENTER_IN_PARENT);
         addView(border, borderParams);
 
-        EditText editText = null;
+        AutoResizeTextView editText = null;
         if (editable) {
-            editText = new EditText(context);
+            editText = new AutoResizeTextView(context);
             editText.setHint("输入内容");
-            editText.setTextColor(0xff00ffff);
             editText.setBackgroundColor(0x00000000);
+            editText.setSingleLine();
             editText.setFocusableInTouchMode(true);
             editText.setMaxWidth(opts.outWidth - TEXT_PADDING_SIZE);
-            editText.setMaxHeight(opts.outHeight - TEXT_PADDING_SIZE);
             editText.setOnFocusChangeListener(new OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
@@ -112,16 +112,16 @@ public class NewCartoonView extends RelativeLayout {
                     }, 100);
                 }
             });
-            LayoutParams textParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            LayoutParams textParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             textParams.addRule(RelativeLayout.CENTER_IN_PARENT);
             addView(editText, textParams);
         }
 
-        addDragAnimation(context, imageView, border, scaleBtn, editText);
-        imageView.requestFocus();
+        addDragAnimation(context, imageView, border, editText, scaleBtn, delBtn);
+        editText.requestFocus();
     }
 
-    private void addDragAnimation(final Context context, final View centerView, final View bordView, final View dragBtn, final EditText editText) {
+    private void addDragAnimation(final Context context, final View centerView, final View bordView, final AutoResizeTextView editText, final View dragBtn, final View delBtn) {
 
         dragBtn.setOnTouchListener(new View.OnTouchListener() {
 
@@ -183,11 +183,12 @@ public class NewCartoonView extends RelativeLayout {
 
                         bordView.setLayoutParams(params);
                         if (editText != null) {
-                            editText.setMaxWidth(params.width - BORD_PADDIN_SIZE - TEXT_PADDING_SIZE);
-                            editText.setMaxHeight(params.height - BORD_PADDIN_SIZE - TEXT_PADDING_SIZE);
+                            editText.setScaleX((float) ((toRadius / fromRadius) * downScaleX));
+                            editText.setScaleY((float) (toRadius / fromRadius) * downScaleY);
+                            editText.setRotation((float) (toAngle - fromAngle)
+                                    + downRotation);
                         }
-                        editText.setRotation((float) (toAngle - fromAngle)
-                                + downRotation);
+
 
                         break;
                     case MotionEvent.ACTION_UP:
@@ -201,6 +202,15 @@ public class NewCartoonView extends RelativeLayout {
                         break;
                 }
                 return true;
+            }
+        });
+
+        delBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeView(bordView);
+                removeView(editText);
+                removeView(centerView);
             }
         });
 
@@ -230,7 +240,7 @@ public class NewCartoonView extends RelativeLayout {
                     case MotionEvent.ACTION_UP:
                         if ((editText != null) && (Math.abs(event.getRawY() - downY) < ViewConfiguration.get(context).getScaledTouchSlop()) &&
                                 (Math.abs(event.getRawX() - downX) < ViewConfiguration.get(context).getScaledTouchSlop())) {
-                            editText.requestFocus();
+                            editText.callOnClick();
                         }
 
                         break;
