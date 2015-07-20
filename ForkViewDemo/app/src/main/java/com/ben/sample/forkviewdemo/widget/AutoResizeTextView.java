@@ -5,6 +5,7 @@ import android.text.Layout.Alignment;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -186,6 +187,7 @@ public class AutoResizeTextView extends EditText {
      */
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        Log.d("", "onLayout++  left=" + left + " top=" + top + " right=" + right + " bottom=" + bottom);
         if (changed || mNeedsResize) {
             int widthLimit = (right - left) - getCompoundPaddingLeft() - getCompoundPaddingRight();
             int heightLimit = (bottom - top) - getCompoundPaddingBottom() - getCompoundPaddingTop();
@@ -211,6 +213,7 @@ public class AutoResizeTextView extends EditText {
      * @param height
      */
     public void resizeText(int width, int height) {
+        Log.d("", "resizeText++  width=" + width + "  height=" + height);
         CharSequence text = getText();
         // Do not resize if the view does not have dimensions or there is no text
         if (text == null || text.length() == 0 || height <= 0 || width <= 0 || mTextSize == 0) {

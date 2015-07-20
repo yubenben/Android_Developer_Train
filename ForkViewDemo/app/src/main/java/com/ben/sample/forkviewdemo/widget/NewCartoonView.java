@@ -86,14 +86,21 @@ public class NewCartoonView extends RelativeLayout {
         borderParams.addRule(RelativeLayout.CENTER_IN_PARENT);
         addView(border, borderParams);
 
-        AutoResizeTextView editText = null;
+        AutoResizeEditText editText = null;
         if (editable) {
-            editText = new AutoResizeTextView(context);
+            editText = new AutoResizeEditText(context);
+            editText.setEnabled(true);
             editText.setHint("输入内容");
             editText.setBackgroundColor(0x00000000);
-            editText.setSingleLine();
             editText.setFocusableInTouchMode(true);
+            editText.setFocusable(true);
+            editText.setEnableSizeCache(false);
+            editText.setScrollContainer(false);
+            editText.setMovementMethod(null);
+            editText.setSingleLine();
+            editText.setTextSize(90);
             editText.setMaxWidth(opts.outWidth - TEXT_PADDING_SIZE);
+            editText.setMaxHeight(100);
             LayoutParams textParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             textParams.addRule(RelativeLayout.CENTER_IN_PARENT);
             addView(editText, textParams);
@@ -104,7 +111,7 @@ public class NewCartoonView extends RelativeLayout {
     }
 
     private void addDragAnimation(final Context context, final View centerView, final View bordView,
-                                  final AutoResizeTextView editText, final View dragBtn, final View delBtn, View colorBtn) {
+                                  final AutoResizeEditText editText, final View dragBtn, final View delBtn, View colorBtn) {
 
         dragBtn.setOnTouchListener(new View.OnTouchListener() {
 
