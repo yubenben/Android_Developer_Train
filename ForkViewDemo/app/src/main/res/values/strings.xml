@@ -7,4 +7,5 @@
     <string name="add_circle">添加一个圆</string>
     <string name="add_squre">添加一个方</string>
     <string name="add_edit">添加一个对话气泡</string>
+    <string name="btn_color_picker">颜色选择器</string>
 </resources>

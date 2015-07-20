@@ -10,7 +10,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -31,7 +30,7 @@ public class NewCartoonView extends RelativeLayout {
 
     private static final String TAG = "CartoonView";
     private static final int TEXT_PADDING_SIZE = 100;
-    private static final int BORD_PADDIN_SIZE = 200;
+    private static final int BORD_PADDING_SIZE = 200;
     private RelativeLayout mParentView;
     private ImageView mSourceImage;
     private int mImageSourceId;
@@ -63,7 +62,7 @@ public class NewCartoonView extends RelativeLayout {
                 LayoutParams.MATCH_PARENT));
     }
 
-    public void addCartton(Context context, int img_id, boolean editable) {
+    public void addCartton(final Context context, int img_id, boolean editable) {
 
         BitmapFactory.Options opts = new BitmapFactory.Options();
         opts.inJustDecodeBounds = true;
@@ -82,7 +81,8 @@ public class NewCartoonView extends RelativeLayout {
                 false);
         ImageView scaleBtn = (ImageView) border.findViewById(R.id.scale_btn);
         ImageView delBtn = (ImageView) border.findViewById(R.id.del_btn);
-        LayoutParams borderParams = new LayoutParams(opts.outWidth + BORD_PADDIN_SIZE, opts.outHeight + BORD_PADDIN_SIZE);
+        ImageView colorBtn = (ImageView) border.findViewById(R.id.color_btn);
+        LayoutParams borderParams = new LayoutParams(opts.outWidth + BORD_PADDING_SIZE, opts.outHeight + BORD_PADDING_SIZE);
         borderParams.addRule(RelativeLayout.CENTER_IN_PARENT);
         addView(border, borderParams);
 
@@ -94,34 +94,17 @@ public class NewCartoonView extends RelativeLayout {
             editText.setSingleLine();
             editText.setFocusableInTouchMode(true);
             editText.setMaxWidth(opts.outWidth - TEXT_PADDING_SIZE);
-            editText.setOnFocusChangeListener(new OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    final boolean isFocus = hasFocus;
-                    final EditText input = (EditText) v;
-                    (new Handler()).postDelayed(new Runnable() {
-                        public void run() {
-                            InputMethodManager imm = (InputMethodManager)
-                                    input.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                            if (isFocus) {
-                                imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
-                            } else {
-                                imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
-                            }
-                        }
-                    }, 100);
-                }
-            });
             LayoutParams textParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             textParams.addRule(RelativeLayout.CENTER_IN_PARENT);
             addView(editText, textParams);
         }
 
-        addDragAnimation(context, imageView, border, editText, scaleBtn, delBtn);
+        addDragAnimation(context, imageView, border, editText, scaleBtn, delBtn, colorBtn);
         editText.requestFocus();
     }
 
-    private void addDragAnimation(final Context context, final View centerView, final View bordView, final AutoResizeTextView editText, final View dragBtn, final View delBtn) {
+    private void addDragAnimation(final Context context, final View centerView, final View bordView,
+                                  final AutoResizeTextView editText, final View dragBtn, final View delBtn, View colorBtn) {
 
         dragBtn.setOnTouchListener(new View.OnTouchListener() {
 
@@ -164,7 +147,7 @@ public class NewCartoonView extends RelativeLayout {
                         centerView.setScaleY((float) (toRadius / fromRadius) * downScaleY);
 
                         ViewGroup.LayoutParams params = bordView.getLayoutParams();
-                        params.width = (int) (centerView.getWidth() * ((toRadius / fromRadius) * downScaleX) + BORD_PADDIN_SIZE);
+                        params.width = (int) (centerView.getWidth() * ((toRadius / fromRadius) * downScaleX) + BORD_PADDING_SIZE);
 //                                (int) (
 //                                        ((toRadius / fromRadius) * downScaleX) *
 //                                                (
@@ -172,7 +155,7 @@ public class NewCartoonView extends RelativeLayout {
 //                                                                + centerView.getHeight() * Math.abs(Math.sin(Math.toRadians(centerView.getRotation())))
 //                                                )
 //                                );
-                        params.height = (int) (centerView.getHeight() * ((toRadius / fromRadius) * downScaleX) + BORD_PADDIN_SIZE);
+                        params.height = (int) (centerView.getHeight() * ((toRadius / fromRadius) * downScaleX) + BORD_PADDING_SIZE);
 //                                (int) (
 //                                        ((toRadius / fromRadius) * downScaleY) *
 //                                                (
@@ -188,7 +171,6 @@ public class NewCartoonView extends RelativeLayout {
                             editText.setRotation((float) (toAngle - fromAngle)
                                     + downRotation);
                         }
-
 
                         break;
                     case MotionEvent.ACTION_UP:
@@ -214,8 +196,25 @@ public class NewCartoonView extends RelativeLayout {
             }
         });
 
+        colorBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ColorPickerDialog dialog = new ColorPickerDialog(context, editText.getTextColors().getDefaultColor(),
+                        getResources().getString(R.string.btn_color_picker),
+                        new ColorPickerDialog.OnColorChangedListener() {
+
+                            @Override
+                            public void colorChanged(int color) {
+                                editText.setTextColor(color);
+                            }
+                        });
+                dialog.show();
+            }
+        });
+
         centerView.setOnTouchListener(new OnTouchListener() {
             float downX, downY, translationX, translationY;
+            long lastClickTime;
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -238,9 +237,15 @@ public class NewCartoonView extends RelativeLayout {
                         }
                         break;
                     case MotionEvent.ACTION_UP:
-                        if ((editText != null) && (Math.abs(event.getRawY() - downY) < ViewConfiguration.get(context).getScaledTouchSlop()) &&
-                                (Math.abs(event.getRawX() - downX) < ViewConfiguration.get(context).getScaledTouchSlop())) {
-                            editText.callOnClick();
+//                        if ((editText != null) && (Math.abs(event.getRawY() - downY) < ViewConfiguration.get(context).getScaledTouchSlop()) &&
+//                                (Math.abs(event.getRawX() - downX) < ViewConfiguration.get(context).getScaledTouchSlop())) {
+//                            editText.requestFocus();
+//                        }
+                        long t = System.currentTimeMillis();
+                        if (t - lastClickTime < 500) {
+                            editText.requestFocus();
+                        } else {
+                            lastClickTime = t;
                         }
 
                         break;
@@ -260,9 +265,36 @@ public class NewCartoonView extends RelativeLayout {
                     v.bringToFront();
                     bordView.setVisibility(View.VISIBLE);
                     bordView.bringToFront();
-                } else {
+                    if (editText != null) {
+                        editText.bringToFront();
+                    }
+                } else if (editText == null || !editText.isFocused()) {
                     bordView.setVisibility(View.GONE);
                 }
+            }
+        });
+
+        editText.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                final boolean isFocus = hasFocus;
+                final EditText input = (EditText) v;
+                if (!hasFocus) {
+                    if (!centerView.isFocused()) {
+                        bordView.setVisibility(View.GONE);
+                    }
+                }
+                (new Handler()).postDelayed(new Runnable() {
+                    public void run() {
+                        InputMethodManager imm = (InputMethodManager)
+                                input.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (isFocus) {
+                            imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+                        } else {
+                            imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
+                        }
+                    }
+                }, 100);
             }
         });
     }

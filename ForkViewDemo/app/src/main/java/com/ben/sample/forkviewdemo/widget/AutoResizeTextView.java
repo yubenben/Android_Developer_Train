@@ -9,16 +9,6 @@ import android.util.TypedValue;
 import android.widget.EditText;
 import android.widget.TextView;
 
-/* Everyone is permitted to copy and distribute verbatim or modified
-        * copies of this license document, and changing it is allowed as long
-        * as the name is changed.
-        *
-        *            DO WHAT YOU WANT TO PUBLIC LICENSE
-        *   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-        *
-        *  0. You just DO WHAT YOU WANT TO.
-        */
-
 /**
  * Text view that auto adjusts text size to fit within the view.
  * If the text size equals the minimum text size and still does not
@@ -272,7 +262,7 @@ public class AutoResizeTextView extends EditText {
                     float ellipseWidth = textPaint.measureText(mEllipsis);
 
                     // Trim characters off until we have enough room to draw the ellipsis
-                    while (width < lineWidth + ellipseWidth) {
+                    while (width < lineWidth + ellipseWidth && end > 1) {
                         lineWidth = textPaint.measureText(text.subSequence(start, --end + 1).toString());
                     }
                     setText(text.subSequence(0, end) + mEllipsis);
