@@ -88,19 +88,19 @@ public class NewCartoonView extends RelativeLayout {
 
         AutoResizeEditText editText = null;
         if (editable) {
-            editText = new AutoResizeEditText(context);
+            LayoutInflater inflater =
+                    (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            editText = (AutoResizeEditText) inflater.inflate(R.layout.auto_resize_edit_text,
+                    null,
+                    false);
             editText.setEnabled(true);
-            editText.setHint("输入内容");
-            editText.setBackgroundColor(0x00000000);
             editText.setFocusableInTouchMode(true);
             editText.setFocusable(true);
             editText.setEnableSizeCache(false);
             editText.setScrollContainer(false);
             editText.setMovementMethod(null);
             editText.setSingleLine();
-            editText.setTextSize(90);
             editText.setMaxWidth(opts.outWidth - TEXT_PADDING_SIZE);
-            editText.setMaxHeight(100);
             LayoutParams textParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             textParams.addRule(RelativeLayout.CENTER_IN_PARENT);
             addView(editText, textParams);
@@ -155,21 +155,7 @@ public class NewCartoonView extends RelativeLayout {
 
                         ViewGroup.LayoutParams params = bordView.getLayoutParams();
                         params.width = (int) (centerView.getWidth() * ((toRadius / fromRadius) * downScaleX) + BORD_PADDING_SIZE);
-//                                (int) (
-//                                        ((toRadius / fromRadius) * downScaleX) *
-//                                                (
-//                                                        centerView.getWidth() * Math.abs(Math.cos(Math.toRadians(centerView.getRotation())))
-//                                                                + centerView.getHeight() * Math.abs(Math.sin(Math.toRadians(centerView.getRotation())))
-//                                                )
-//                                );
                         params.height = (int) (centerView.getHeight() * ((toRadius / fromRadius) * downScaleX) + BORD_PADDING_SIZE);
-//                                (int) (
-//                                        ((toRadius / fromRadius) * downScaleY) *
-//                                                (
-//                                                        centerView.getWidth() * Math.abs(Math.sin(Math.toRadians(centerView.getRotation())))
-//                                                                + centerView.getHeight() * Math.abs(Math.cos(Math.toRadians(centerView.getRotation())))
-//                                                )
-//                                );
 
                         bordView.setLayoutParams(params);
                         if (editText != null) {
