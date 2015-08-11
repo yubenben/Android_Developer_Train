@@ -1,4 +1,4 @@
-package com.crazy.gezi.ui.widget;
+package com.ben.sample.forkviewdemo.widget;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -12,10 +12,6 @@ import android.view.ViewConfiguration;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
-
-import com.crazy.gezi.R;
-import com.crazy.gezi.ui.SecretPaperFragment.SecretPaperAdapter;
-import com.crazy.gezi.utils.PlatformUtils;
 
 public class PaperViewGroup extends RelativeLayout {
 
